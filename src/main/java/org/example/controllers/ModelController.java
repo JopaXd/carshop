@@ -1,8 +1,8 @@
 package org.example.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.example.dtos.BrandDTO;
-import org.example.services.BrandService;
+import org.example.dtos.ModelDTO;
+import org.example.services.ModelService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,11 +11,11 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class BrandController {
-    private final BrandService brandService;
+public class ModelController {
+    private final ModelService modelService;
 
-    @GetMapping("/brands")
-    public ResponseEntity<List<BrandDTO>> allBrands() {
-        return ResponseEntity.ok(brandService.allBrands());
+    @GetMapping("/models")
+    public ResponseEntity<List<ModelDTO>> allModels() {
+        return ResponseEntity.ok(modelService.allModels());
     }
 }

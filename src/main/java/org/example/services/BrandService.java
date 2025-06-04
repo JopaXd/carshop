@@ -2,7 +2,6 @@ package org.example.services;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dtos.BrandDTO;
-import org.example.entities.Brand;
 import org.example.mappers.BrandMapper;
 import org.example.repositories.BrandRepository;
 import org.springframework.stereotype.Service;

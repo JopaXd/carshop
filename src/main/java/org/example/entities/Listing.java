@@ -12,18 +12,18 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name="models")
+@Table(name="listings")
 public class Listing {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "model_id", nullable = false)
     private Model model;
 
@@ -48,7 +48,7 @@ public class Listing {
     @Column(name = "is_sold")
     private Boolean isSold = false;
 
-    @Column(name = "image_base64")
+    @Column(name = "image_base64", columnDefinition = "LONGTEXT")
     private String image;
 
     @PreUpdate

@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class BrandDTO {
+public class ModelDTO {
     private String name;
-    private String country;
+    private BrandDTO brand;
 }
