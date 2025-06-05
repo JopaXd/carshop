@@ -19,4 +19,9 @@ public class ModelService {
     public List<ModelDTO> allModels() {
         return modelMapper.toModelDtos(modelRepository.findAll());
     }
+
+    public List<ModelDTO> getModelsByBrandId(Integer brandId) {
+        return modelMapper.toModelDtos(modelRepository.findByBrandId(brandId));
+    }
+
 }

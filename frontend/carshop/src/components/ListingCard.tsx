@@ -10,7 +10,7 @@ import {
   XCircle,
   Edit,
   Trash,
-  DollarSignIcon,
+  // DollarSignIcon,
 } from "lucide-react";
 import {
   Card,
@@ -68,7 +68,6 @@ const ListingCard: React.FC<ListingProps> = ({ listing }) => (
       <div className="text-sm text-muted-foreground">{listing.description}</div>
     </CardContent>
     <CardFooter className="block">
-      {/* Display image underneath other info */}
       {listing.image && (
         <img
           src={`${listing.image}`}
@@ -77,30 +76,26 @@ const ListingCard: React.FC<ListingProps> = ({ listing }) => (
         />
       )}
       <div className="flex flex-col mt-4 space-y-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full flex items-center bg-blue-600 hover:bg-blue-500 text-white"
-        >
+        <Button size="sm" className="w-full flex items-center">
           <Edit className="mr-2 h-4 w-4" />
           Edit
         </Button>
         <Button
-          variant="outline"
+          variant="destructive"
           size="sm"
-          className="w-full flex items-center bg-red-600 hover:bg-red-500 text-white"
+          className="w-full flex items-center"
         >
           <Trash className="mr-2 h-4 w-4" />
           Delete
         </Button>
-        <Button
+        {/* <Button
           variant="outline"
           size="sm"
           className="w-full flex items-center bg-green-400 hover:bg-green-500 text-white"
         >
           <DollarSignIcon className="mr-2 h-4 w-4" />
           Buy
-        </Button>
+        </Button>*/}
       </div>
     </CardFooter>
   </Card>

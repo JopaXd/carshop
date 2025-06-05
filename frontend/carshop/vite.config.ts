@@ -13,7 +13,7 @@ export default defineConfig({
   ],
   server: {
     watch: {
-      ignored: ["**/node_modules/**"],
+      ignored: ["**/node_modules/**", "**/dist/**", "**/build/**"],
     },
   },
   resolve: {

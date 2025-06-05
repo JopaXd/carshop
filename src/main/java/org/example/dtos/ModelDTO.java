@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ModelDTO {
+    private Integer id;
     private String name;
 //    private BrandDTO brand;
 }
