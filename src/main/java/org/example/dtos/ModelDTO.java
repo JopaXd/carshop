@@ -11,5 +11,5 @@ import lombok.Setter;
 @Setter
 public class ModelDTO {
     private String name;
-    private BrandDTO brand;
+//    private BrandDTO brand;
 }
