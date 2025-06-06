@@ -2,22 +2,62 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import ClipLoader from "react-spinners/ClipLoader";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"; // Adjust import path as needed
+} from "@/components/ui/select";
+import { useForm } from "@tanstack/react-form";
 
 export const Route = createFileRoute("/create")({
   component: Create,
 });
 
 function Create() {
-  const [brandId, setBrandId] = useState<number>(0);
+  const navigation = useNavigate();
+
+  const listingForm = useForm({
+    defaultValues: {
+      brand: "",
+      model: "",
+      year: "",
+      mileage: "",
+      price: "",
+      description: "",
+      image: "null",
+    },
+    onSubmit: async ({ value }) => {
+      value["brand"] = parseInt(value.brand);
+      value["model"] = parseInt(value.model);
+      value["isSold"] = false;
+
+      // Convert file to base64 if needed
+      if (!value.image || value.image === "null") {
+        value["image"] = null;
+      } else {
+        value["image"] = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = (error) => reject(error);
+          reader.readAsDataURL(value.image);
+        });
+      }
+
+      try {
+        await axios.post("http://localhost:8080/listings", value);
+        navigation({ to: "/" });
+      } catch (error) {
+        console.error("Error creating listing:", error);
+      }
+    },
+  });
 
   const brandQuery = useQuery({
     queryKey: ["brands"],
@@ -25,40 +65,30 @@ function Create() {
   });
 
   const modelsQuery = useQuery({
-    queryKey: ["models", brandId],
-    queryFn: () => fetchModels(brandId),
-    enabled: !!brandId,
+    queryKey: ["models", listingForm.state.values.brand],
+    queryFn: () => fetchModels(listingForm.state.values.brand),
+    enabled: !!listingForm.state.values.brand,
   });
 
-  const [selectedModel, setSelectedModel] = useState<string | undefined>();
-
   useEffect(() => {
-    if (
-      modelsQuery.data &&
-      modelsQuery.data.length > 0 &&
-      (selectedModel === undefined ||
-        !modelsQuery.data.find((m) => String(m.id) === selectedModel))
-    ) {
-      setSelectedModel(String(modelsQuery.data[0].id));
+    if (modelsQuery.data && modelsQuery.data.length > 0) {
+      listingForm.setFieldValue("model", String(modelsQuery.data[0].id));
     }
   }, [modelsQuery.data]);
 
   async function fetchBrands() {
     const response = await axios.get("http://localhost:8080/brands");
-    setBrandId(response.data[0]?.id || 0);
+    //  convert brand id to string and set it
+    listingForm.setFieldValue("brand", String(response.data[0].id));
     return response.data;
   }
 
-  async function fetchModels(brandId: number) {
+  async function fetchModels(brandId: string) {
     const response = await axios.get(
       `http://localhost:8080/models/brand/${brandId}`,
     );
     return response.data;
   }
-
-  const selectBrand = (brandId: number) => {
-    setBrandId(brandId);
-  };
 
   return (
     // Create listing form
@@ -69,116 +99,220 @@ function Create() {
           <ClipLoader color="#36d7b7" size={50} />
         </div>
       ) : (
-        <form className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Brand
-            </label>
-            <Select
-              value={String(brandId)}
-              onValueChange={(value) => {
-                const selectedBrandId = parseInt(value);
-                selectBrand(selectedBrandId);
-              }}
-            >
-              <SelectTrigger className="w-full mt-1 p-2 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                <SelectValue placeholder="Select a brand" />
-              </SelectTrigger>
-              <SelectContent>
-                {brandQuery.data?.map((brand: any) => (
-                  <SelectItem key={brand.id} value={String(brand.id)}>
-                    {brand.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          <listingForm.Field
+            name="brand"
+            children={(field) => (
+              <div>
+                <Label
+                  htmlFor="brand"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Brand
+                </Label>
+                <Select
+                  value={field.state.value}
+                  onValueChange={(e) => {
+                    field.handleChange(e);
+                    modelsQuery.refetch();
+                  }}
+                >
+                  <SelectTrigger
+                    id="brand"
+                    className="w-full mt-1 p-2 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  >
+                    <SelectValue placeholder="Select a brand" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {brandQuery.data?.map((brand: any) => (
+                      <SelectItem key={brand.id} value={String(brand.id)}>
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          ></listingForm.Field>
+          <listingForm.Field
+            name="model"
+            children={(field) => (
+              <div>
+                <Label
+                  htmlFor="model"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Model
+                </Label>
+                <Select
+                  value={field.state.value}
+                  onValueChange={(e) => {
+                    field.handleChange(e);
+                  }}
+                >
+                  <SelectTrigger id="model" className="w-full">
+                    <SelectValue
+                      placeholder={
+                        modelsQuery.isPending
+                          ? "Loading models..."
+                          : "Select a model"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modelsQuery.isPending ? (
+                      <SelectItem value="0" disabled>
+                        Loading models...
+                      </SelectItem>
+                    ) : modelsQuery.data && modelsQuery.data.length > 0 ? (
+                      modelsQuery.data.map((model: any) => (
+                        <SelectItem key={model.id} value={String(model.id)}>
+                          {model.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="0" disabled>
+                        No models found
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          ></listingForm.Field>
           {/* Additional form fields for listing details */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Model
-            </label>
-            <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="w-full">
-                <SelectValue
-                  placeholder={
-                    modelsQuery.isPending
-                      ? "Loading models..."
-                      : "Select a model"
-                  }
+          <listingForm.Field
+            name="year"
+            children={(field) => (
+              <div>
+                <Label
+                  htmlFor="year"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Year
+                </Label>
+                <Input
+                  id="year"
+                  type="number"
+                  name="year"
+                  className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                  value={field.state.value}
+                  onChange={(e) => {
+                    field.handleChange(e.target.value);
+                  }}
                 />
-              </SelectTrigger>
-              <SelectContent>
-                {modelsQuery.isPending ? (
-                  <SelectItem value="0" disabled>
-                    Loading models...
-                  </SelectItem>
-                ) : modelsQuery.data && modelsQuery.data.length > 0 ? (
-                  modelsQuery.data.map((model: any) => (
-                    <SelectItem key={model.id} value={String(model.id)}>
-                      {model.name}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem value="0" disabled>
-                    No models found
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Year
-            </label>
-            <Input
-              type="number"
-              name="year"
-              className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Mileage (km)
-            </label>
-            <Input
-              type="number"
-              name="mileage"
-              className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Price ($)
-            </label>
-            <Input
-              type="number"
-              name="price"
-              className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Description
-            </label>
-            <Input
-              type="text"
-              name="description"
-              className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            Create Listing
-          </button>
+              </div>
+            )}
+          ></listingForm.Field>
+          <listingForm.Field
+            name="mileage"
+            children={(field) => (
+              <div>
+                <Label
+                  htmlFor="mileage"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Mileage (km)
+                </Label>
+                <Input
+                  id="mileage"
+                  type="number"
+                  name="mileage"
+                  className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                  value={field.state.value}
+                  onChange={(e) => {
+                    field.handleChange(e.target.value);
+                  }}
+                />
+              </div>
+            )}
+          ></listingForm.Field>
+          <listingForm.Field
+            name="price"
+            children={(field) => (
+              <div>
+                <Label
+                  htmlFor="price"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Price ($)
+                </Label>
+                <Input
+                  id="price"
+                  type="number"
+                  name="price"
+                  className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                  value={field.state.value}
+                  onChange={(e) => {
+                    field.handleChange(e.target.value);
+                  }}
+                />
+              </div>
+            )}
+          ></listingForm.Field>
+          <listingForm.Field
+            name="description"
+            children={(field) => (
+              <div>
+                <Label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Description
+                </Label>
+                <Input
+                  id="description"
+                  type="text"
+                  name="description"
+                  className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                  value={field.state.value}
+                  onChange={(e) => {
+                    field.handleChange(e.target.value);
+                  }}
+                />
+              </div>
+            )}
+          ></listingForm.Field>
+          {/*Add image select field*/}
+          <listingForm.Field
+            name="image"
+            children={(field) => (
+              <div>
+                <Label
+                  htmlFor="image"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Images (optional)
+                </Label>
+                <Input
+                  id="image"
+                  type="file"
+                  name="images"
+                  className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  accept="image/*"
+                  onChange={(e) => {
+                    field.handleChange(e.target.files[0]);
+                  }}
+                />
+              </div>
+            )}
+          ></listingForm.Field>
         </form>
       )}
+      <div className="spacer mt-5" />
+      <Button onClick={listingForm.handleSubmit} className="px-4 py-2">
+        Create Listing
+      </Button>
     </div>
   );
 }
