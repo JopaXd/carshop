@@ -24,9 +24,10 @@ import { Button } from "@/components/ui/button";
 
 interface ListingProps {
   listing: Listing;
+  deleteMethod: Function;
 }
 
-const ListingCard: React.FC<ListingProps> = ({ listing }) => (
+const ListingCard: React.FC<ListingProps> = ({ listing, deleteMethod }) => (
   <Card className="max-w-sm w-full shadow-lg border border-gray-200">
     <CardHeader className="flex flex-row items-center gap-3">
       <CarFront className="w-8 h-8 text-primary" />
@@ -84,6 +85,7 @@ const ListingCard: React.FC<ListingProps> = ({ listing }) => (
           variant="destructive"
           size="sm"
           className="w-full flex items-center"
+          onClick={() => deleteMethod(listing.id)}
         >
           <Trash className="mr-2 h-4 w-4" />
           Delete

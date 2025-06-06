@@ -2,6 +2,7 @@ import type { Brand } from "./Brand";
 import type { Model } from "./Model";
 
 export default interface Car {
+  id: Number;
   brand: Brand;
   model: Model;
   year: number;

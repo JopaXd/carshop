@@ -5,10 +5,7 @@ import org.example.dtos.CreateListingDTO;
 import org.example.dtos.ListingDTO;
 import org.example.services.ListingService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -27,5 +24,10 @@ public class ListingController {
     public ResponseEntity<ListingDTO> createListing(@RequestBody CreateListingDTO createDto) {
         ListingDTO createdListingRecord = listingService.createListing(createDto);
         return ResponseEntity.created(URI.create("/listings/" + createdListingRecord.getId())).body(createdListingRecord);
+    }
+
+    @DeleteMapping("/listings/{id}")
+    public ResponseEntity<ListingDTO> deleteListing(@PathVariable Integer id) {
+        return ResponseEntity.ok(listingService.deleteListing(id));
     }
 }

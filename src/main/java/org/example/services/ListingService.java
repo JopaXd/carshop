@@ -6,10 +6,12 @@ import org.example.dtos.ListingDTO;
 import org.example.entities.Brand;
 import org.example.entities.Listing;
 import org.example.entities.Model;
+import org.example.exceptions.AppException;
 import org.example.mappers.ListingMapper;
 import org.example.repositories.BrandRepository;
 import org.example.repositories.ListingRepository;
 import org.example.repositories.ModelRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,5 +46,14 @@ public class ListingService {
         listing.setIsSold(createDto.getIsSold());
         Listing saved = listingRepository.save(listing);
         return listingMapper.toListingDto(saved);
+    }
+
+    public ListingDTO deleteListing(Integer id) {
+        Listing listing = listingRepository.findById(id).orElseThrow(() -> new AppException("Listing not found!", HttpStatus.NOT_FOUND));
+
+        ListingDTO listingDTO = listingMapper.toListingDto(listing);
+        listingRepository.deleteById(id);
+
+        return listingDTO;
     }
 }
