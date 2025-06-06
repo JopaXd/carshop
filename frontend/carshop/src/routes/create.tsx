@@ -108,6 +108,13 @@ function Create() {
         >
           <listingForm.Field
             name="brand"
+            validators={{
+              onSubmit: (field) => {
+                if (!field.value) {
+                  return "Brand is required";
+                }
+              },
+            }}
             children={(field) => (
               <div>
                 <Label
@@ -137,11 +144,23 @@ function Create() {
                     ))}
                   </SelectContent>
                 </Select>
+                {field.state.meta.errors && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {field.state.meta.errors}
+                  </p>
+                )}
               </div>
             )}
           ></listingForm.Field>
           <listingForm.Field
             name="model"
+            validators={{
+              onSubmit: (field) => {
+                if (!field.value) {
+                  return "Model is required";
+                }
+              },
+            }}
             children={(field) => (
               <div>
                 <Label
@@ -183,11 +202,22 @@ function Create() {
                     )}
                   </SelectContent>
                 </Select>
+                {field.state.meta.errors && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {field.state.meta.errors}
+                  </p>
+                )}
               </div>
             )}
           ></listingForm.Field>
-          {/* Additional form fields for listing details */}
           <listingForm.Field
+            validators={{
+              onSubmit: (field) => {
+                if (!field.value || parseInt(field.value) <= 0) {
+                  return "Year must be a valid number greater than 0";
+                }
+              },
+            }}
             name="year"
             children={(field) => (
               <div>
@@ -208,10 +238,22 @@ function Create() {
                     field.handleChange(e.target.value);
                   }}
                 />
+                {field.state.meta.errors && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {field.state.meta.errors}
+                  </p>
+                )}
               </div>
             )}
           ></listingForm.Field>
           <listingForm.Field
+            validators={{
+              onSubmit: (field) => {
+                if (!field.value || parseInt(field.value) < 0) {
+                  return "Mileage must be a valid number greater or equal to 0.";
+                }
+              },
+            }}
             name="mileage"
             children={(field) => (
               <div>
@@ -232,10 +274,22 @@ function Create() {
                     field.handleChange(e.target.value);
                   }}
                 />
+                {field.state.meta.errors && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {field.state.meta.errors}
+                  </p>
+                )}
               </div>
             )}
           ></listingForm.Field>
           <listingForm.Field
+            validators={{
+              onSubmit: (field) => {
+                if (!field.value || parseFloat(field.value) < 0) {
+                  return "Price must be a valid number greater than 0.";
+                }
+              },
+            }}
             name="price"
             children={(field) => (
               <div>
@@ -256,10 +310,22 @@ function Create() {
                     field.handleChange(e.target.value);
                   }}
                 />
+                {field.state.meta.errors && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {field.state.meta.errors}
+                  </p>
+                )}
               </div>
             )}
           ></listingForm.Field>
           <listingForm.Field
+            validators={{
+              onSubmit: (field) => {
+                if (!field.value) {
+                  return "Description is required.";
+                }
+              },
+            }}
             name="description"
             children={(field) => (
               <div>
@@ -280,11 +346,22 @@ function Create() {
                     field.handleChange(e.target.value);
                   }}
                 />
+                {field.state.meta.errors && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {field.state.meta.errors}
+                  </p>
+                )}
               </div>
             )}
           ></listingForm.Field>
-          {/*Add image select field*/}
           <listingForm.Field
+            validators={{
+              onSubmit: (field) => {
+                if (field.value === "null") {
+                  return "Image is required.";
+                }
+              },
+            }}
             name="image"
             children={(field) => (
               <div>
@@ -292,7 +369,7 @@ function Create() {
                   htmlFor="image"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Images (optional)
+                  Image
                 </Label>
                 <Input
                   id="image"
@@ -304,6 +381,11 @@ function Create() {
                     field.handleChange(e.target.files[0]);
                   }}
                 />
+                {field.state.meta.errors && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {field.state.meta.errors}
+                  </p>
+                )}
               </div>
             )}
           ></listingForm.Field>
