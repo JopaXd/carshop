@@ -1,5 +1,5 @@
 import React from "react";
-import type Listing from "@/types/Listing";
+import type ListingProps from "@/types/ListingProps";
 import {
   CarFront,
   Calendar,
@@ -10,7 +10,6 @@ import {
   XCircle,
   Edit,
   Trash,
-  // DollarSignIcon,
 } from "lucide-react";
 import {
   Card,
@@ -21,12 +20,6 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-interface ListingProps {
-  listing: Listing;
-  deleteMethod: Function;
-  editMethod: Function;
-}
 
 const ListingCard: React.FC<ListingProps> = ({
   listing,
@@ -71,7 +64,6 @@ const ListingCard: React.FC<ListingProps> = ({
           </>
         )}
       </div>
-      {/*Date updated*/}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Calendar className="w-4 h-4" />
         <span>
@@ -106,14 +98,6 @@ const ListingCard: React.FC<ListingProps> = ({
           <Trash className="mr-2 h-4 w-4" />
           Delete
         </Button>
-        {/* <Button
-          variant="outline"
-          size="sm"
-          className="w-full flex items-center bg-green-400 hover:bg-green-500 text-white"
-        >
-          <DollarSignIcon className="mr-2 h-4 w-4" />
-          Buy
-        </Button>*/}
       </div>
     </CardFooter>
   </Card>
