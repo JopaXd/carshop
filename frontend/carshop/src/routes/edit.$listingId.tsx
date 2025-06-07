@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { createFileRoute } from "@tanstack/react-router";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Pencil } from "lucide-react";
+import { Calendar, Pencil, Gauge } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
@@ -98,6 +98,12 @@ function EditListingComponent() {
                   <Pencil className="mr-1 h-4 w-4" />
                   Updated:{" "}
                   {new Date(listingQuery.data.updatedAt).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-500 mb-2">
+                <Gauge className="h-5 w-5" />
+                <span className="font-semibold">
+                  {listingQuery.data.mileage.toLocaleString()} km
                 </span>
               </div>
             </CardContent>
