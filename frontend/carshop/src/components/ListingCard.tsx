@@ -25,9 +25,14 @@ import { Button } from "@/components/ui/button";
 interface ListingProps {
   listing: Listing;
   deleteMethod: Function;
+  editMethod: Function;
 }
 
-const ListingCard: React.FC<ListingProps> = ({ listing, deleteMethod }) => (
+const ListingCard: React.FC<ListingProps> = ({
+  listing,
+  deleteMethod,
+  editMethod,
+}) => (
   <Card className="max-w-sm w-full shadow-lg border border-gray-200">
     <CardHeader className="flex flex-row items-center gap-3">
       <CarFront className="w-8 h-8 text-primary" />
@@ -66,6 +71,13 @@ const ListingCard: React.FC<ListingProps> = ({ listing, deleteMethod }) => (
           </>
         )}
       </div>
+      {/*Date updated*/}
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Calendar className="w-4 h-4" />
+        <span>
+          Updated on {new Date(listing.updatedAt).toLocaleDateString()}
+        </span>
+      </div>
       <div className="text-sm text-muted-foreground">{listing.description}</div>
     </CardContent>
     <CardFooter className="block">
@@ -77,7 +89,11 @@ const ListingCard: React.FC<ListingProps> = ({ listing, deleteMethod }) => (
         />
       )}
       <div className="flex flex-col mt-4 space-y-2">
-        <Button size="sm" className="w-full flex items-center">
+        <Button
+          size="sm"
+          className="w-full flex items-center"
+          onClick={() => editMethod(listing.id)}
+        >
           <Edit className="mr-2 h-4 w-4" />
           Edit
         </Button>

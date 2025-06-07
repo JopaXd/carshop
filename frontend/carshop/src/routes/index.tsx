@@ -5,6 +5,7 @@ import axios from "axios";
 import ListingCard from "@/components/ListingCard";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   // State to manage listings
   const [listings, setListings] = useState([]);
+  const navigate = useNavigate();
 
   const listingsQuery = useQuery({
     queryKey: ["listings"],
@@ -46,6 +48,10 @@ function Index() {
       });
   }
 
+  function editListing(id: string) {
+    navigate({ to: `/edit/${id}` });
+  }
+
   return (
     <div className="p-12">
       {listingsQuery.isPending ? (
@@ -68,6 +74,7 @@ function Index() {
                 key={idx}
                 listing={listing}
                 deleteMethod={deleteListing}
+                editMethod={editListing}
               />
             ))}
           </div>

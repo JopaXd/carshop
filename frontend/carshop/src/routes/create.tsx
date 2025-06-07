@@ -27,9 +27,9 @@ function Create() {
     defaultValues: {
       brand: "",
       model: "",
-      year: "",
-      mileage: "",
-      price: "",
+      year: 0,
+      mileage: 0,
+      price: 0,
       description: "",
       image: "null",
     },
@@ -213,7 +213,7 @@ function Create() {
           <listingForm.Field
             validators={{
               onSubmit: (field) => {
-                if (!field.value || parseInt(field.value) <= 0) {
+                if (!field.value || field.value <= 0) {
                   return "Year must be a valid number greater than 0";
                 }
               },
@@ -249,7 +249,7 @@ function Create() {
           <listingForm.Field
             validators={{
               onSubmit: (field) => {
-                if (!field.value || parseInt(field.value) < 0) {
+                if (!field.value || field.value < 0) {
                   return "Mileage must be a valid number greater or equal to 0.";
                 }
               },
@@ -285,7 +285,7 @@ function Create() {
           <listingForm.Field
             validators={{
               onSubmit: (field) => {
-                if (!field.value || parseFloat(field.value) < 0) {
+                if (!field.value || field.value < 0) {
                   return "Price must be a valid number greater than 0.";
                 }
               },
@@ -392,9 +392,11 @@ function Create() {
         </form>
       )}
       <div className="spacer mt-5" />
-      <Button onClick={listingForm.handleSubmit} className="px-4 py-2">
-        Create Listing
-      </Button>
+      <div className="text-center">
+        <Button className="text-center" onClick={listingForm.handleSubmit}>
+          Create Listing
+        </Button>
+      </div>
     </div>
   );
 }
